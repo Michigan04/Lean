@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When Lean Has No Slack</title>
+<meta name="description" content="Stage 2 deck: diagnosing three 2025 supply breaks, pricing a magnet buffer for Indian electric two-wheeler makers, and an early-warning system with a 90-day playbook.">
+<style>
+@font-face{font-family:"Archivo";font-weight:600;src:url(fonts/archivo-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:700;src:url(fonts/archivo-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:800;src:url(fonts/archivo-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Archivo";font-weight:900;src:url(fonts/archivo-latin-900-normal.woff2) format("woff2")}
+@font-face{font-family:"Plex";font-weight:400;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Plex";font-weight:400;font-style:italic;src:url(fonts/ibm-plex-sans-latin-400-italic.woff2) format("woff2")}
+@font-face{font-family:"Plex";font-weight:500;src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Plex";font-weight:600;src:url(fonts/ibm-plex-sans-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Plex";font-weight:700;src:url(fonts/ibm-plex-sans-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:"PlexMono";font-weight:400;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"PlexMono";font-weight:500;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"PlexMono";font-weight:600;src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:500;src:url(fonts/caveat-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:"Caveat";font-weight:700;src:url(fonts/caveat-latin-700-normal.woff2) format("woff2")}
+
+:root{
+  --paper:#FBFAF6; --paper-2:#F3F1EA; --rule:#DEDAD0; --rule-2:#C9C4B6;
+  --ink:#13213C; --ink-2:#3B4660; --muted:#6E7385;
+  --blue:#3A63A8; --teal:#0E9384; --orange:#D9480F;
+  --blue-50:#E8EEF8; --teal-50:#E3F3F0; --orange-50:#FCEBE3;
+  --red:#B42318; --amber:#B54708; --green:#067647;
+  --red-bg:#FDECEA; --amber-bg:#FEF3E2; --green-bg:#E7F5EC;
+  --stage:#1B2233;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--stage);color:var(--ink);font-family:"Plex",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+
+/* ---------- viewer ---------- */
+#viewport{position:fixed;inset:0 0 44px 0;display:flex;align-items:center;justify-content:center}
+#deck{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;width:1280px;height:720px;background:var(--paper);overflow:hidden;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.slide.on{opacity:1;pointer-events:auto}
+#bar{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:10px;padding:0 16px;
+  background:#121826;color:#C8CEDB;font:500 12px/1 "PlexMono",monospace}
+#bar button,#bar a{background:#232B3D;color:#E6E9F0;border:1px solid #333D55;border-radius:6px;height:28px;padding:0 11px;
+  font:500 12px/1 "PlexMono",monospace;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+#bar button:hover,#bar a:hover{background:#2E384F}
+#bar .sp{flex:1}
+#prog{position:fixed;left:0;bottom:44px;height:3px;background:var(--orange);transition:width .25s}
+#dots{display:flex;gap:6px}
+#dots i{width:8px;height:8px;border-radius:50%;background:#3A4560;cursor:pointer;display:block}
+#dots i.on{background:var(--orange)}
+@media (max-width:640px){#bar .hide-s{display:none}}
+
+/* ---------- slide anatomy ---------- */
+.pad{position:absolute;inset:0;padding:22px 34px 0 34px}
+.tabs{display:flex;align-items:center;gap:0;font:600 9.5px/1 "PlexMono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);height:20px;border-bottom:1px solid var(--rule)}
+.tabs span{padding:0 12px 7px 0;margin-right:12px;position:relative}
+.tabs span.on{color:var(--ink)}
+.tabs span.on:after{content:"";position:absolute;left:0;right:12px;bottom:-1px;height:2.5px;background:var(--orange)}
+.tabs .pg{margin-left:auto;margin-right:0;padding-right:0}
+h1.t{font:800 25px/1.12 "Archivo",sans-serif;letter-spacing:-.012em;margin-top:12px;color:var(--ink);max-width:1180px}
+h1.t b{color:var(--orange);font-weight:800}
+.sub{font:400 12.4px/1.42 "Plex";color:var(--ink-2);margin-top:6px;max-width:1150px}
+.sub em{font-style:normal;font-weight:600;color:var(--ink)}
+
+.ph{display:flex;align-items:baseline;gap:7px;font:700 10px/1 "Archivo";letter-spacing:.07em;text-transform:uppercase;color:var(--ink);
+  padding-bottom:5px;border-bottom:1.5px solid var(--ink);margin-bottom:7px}
+.ph .n{font:600 9.5px/1 "PlexMono";color:#fff;background:var(--ink);border-radius:3px;padding:3px 5px 2px;letter-spacing:0}
+.ph .r{margin-left:auto;font:500 9px/1 "PlexMono";letter-spacing:0;text-transform:none;color:var(--muted)}
+sup.f{font:500 7px/0 "PlexMono";color:var(--blue);vertical-align:super;margin-left:1px;letter-spacing:0}
+
+.foot{position:absolute;left:34px;right:34px;bottom:48px;font:400 7.3px/1.35 "PlexMono";color:var(--muted)}
+.sowhat{position:absolute;left:34px;right:34px;bottom:12px;height:30px;display:flex;align-items:center;gap:10px;
+  background:var(--ink);color:#fff;border-radius:4px;padding:0 14px;font:600 12px/1.2 "Plex"}
+.sowhat .k{font:700 9px/1 "PlexMono";letter-spacing:.08em;color:#FFB59A;text-transform:uppercase;white-space:nowrap}
+.note{font:600 15.5px/1.05 "Caveat",cursive;color:var(--orange)}
+
+table.g{width:100%;border-collapse:collapse;font:400 9.8px/1.3 "Plex";color:var(--ink)}
+table.g th{font:600 9px/1.2 "PlexMono";text-transform:uppercase;letter-spacing:.03em;color:var(--ink-2);text-align:left;padding:5px 6px;border-bottom:1.5px solid var(--ink);background:var(--paper-2)}
+table.g td{padding:4.5px 6px;border-bottom:1px solid var(--rule);vertical-align:top}
+table.g td.rh{font:600 9.4px/1.25 "Plex";color:var(--ink-2);width:104px}
+.num{font-family:"PlexMono";font-weight:500}
+.big{font:800 15px/1 "Archivo";color:var(--ink)}
+.tag{display:inline-block;font:700 8.4px/1 "PlexMono";letter-spacing:.04em;padding:3px 5px 2px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
+.tag.r{background:var(--red-bg);color:var(--red)} .tag.a{background:var(--amber-bg);color:var(--amber)} .tag.gr{background:var(--green-bg);color:var(--green)}
+.tag.ink{background:var(--ink);color:#fff}
+.chip{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+.box{border:1px solid var(--rule-2);border-radius:5px;background:#fff}
+.mono{font-family:"PlexMono"}
+.muted{color:var(--muted)}
+svg text{font-family:"PlexMono"}
+
+/* ---------- cover ---------- */
+.cover{background:var(--ink);color:#fff}
+.cover .pad{padding:44px 60px}
+.cover .kick{font:600 11px/1 "PlexMono";letter-spacing:.14em;text-transform:uppercase;color:#9FB0CF}
+.cover h1{font:900 74px/.95 "Archivo";letter-spacing:-.025em;margin-top:150px}
+.cover h1 span{color:#FF8A5C}
+.cover .deck-sub{font:400 18px/1.4 "Plex";color:#C9D2E3;margin-top:18px;max-width:640px}
+.cover .team{position:absolute;left:60px;bottom:46px;display:flex;gap:28px;align-items:flex-end}
+.cover .team .lbl{font:600 9.5px/1 "PlexMono";letter-spacing:.12em;color:#8C9AB8;text-transform:uppercase;margin-bottom:8px}
+.cover .tname{border:1.5px dashed #6B7A99;border-radius:5px;padding:10px 18px;font:700 20px/1 "Archivo";color:#fff;min-width:240px}
+.cover .stage{font:500 12px/1.4 "PlexMono";color:#9FB0CF}
+
+/* ---------- modal (web only) ---------- */
+#modal{position:fixed;inset:0;background:rgba(10,14,24,.72);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+#modal.on{display:flex}
+#modal .card{background:var(--paper);color:var(--ink);width:min(980px,100%);max-height:calc(100vh - 32px);overflow:auto;border-radius:10px;padding:22px 24px}
+#modal h2{font:800 20px/1.15 "Archivo"}
+#modal .cols{display:grid;grid-template-columns:300px 1fr;gap:22px;margin-top:14px}
+@media (max-width:760px){#modal .cols{grid-template-columns:1fr}}
+.ctl{margin-bottom:11px}
+.ctl label{display:flex;justify-content:space-between;font:500 12px/1.3 "Plex";color:var(--ink-2)}
+.ctl label b{font:600 12px/1.3 "PlexMono";color:var(--ink)}
+.ctl input{width:100%;accent-color:var(--orange)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi{border:1px solid var(--rule-2);border-radius:6px;padding:9px 10px;background:#fff}
+.kpi .l{font:600 9.5px/1.2 "PlexMono";text-transform:uppercase;color:var(--muted);letter-spacing:.04em}
+.kpi .v{font:800 22px/1.1 "Archivo";margin-top:4px}
+.x{float:right;background:none;border:1px solid var(--rule-2);border-radius:6px;padding:4px 10px;cursor:pointer;font:500 12px "PlexMono"}
+#tip{position:fixed;pointer-events:none;background:#121826;color:#fff;font:500 11px/1.35 "PlexMono";padding:6px 8px;border-radius:5px;z-index:60;display:none;max-width:260px}
+
+/* ---------- print: one slide per 16:9 page ---------- */
+@page{size:1280px 720px;margin:0}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{
+  html,body{overflow:visible;background:#fff;height:auto}
+  #bar,#prog,#modal,#tip,.webonly{display:none!important}
+  #viewport{position:static;display:block}
+  #deck{transform:none!important;position:static;width:1280px;height:auto}
+  .slide{position:relative;opacity:1!important;box-shadow:none;page-break-after:always;break-after:page}
+  .printonly{display:flex!important}
+}
+.printonly{display:none}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="deck">
+
+<!-- ======================= 0 · COVER ======================= -->
+<section class="slide cover" data-title="Cover">
+  <svg width="1280" height="720" viewBox="0 0 1280 720" style="position:absolute;inset:0" aria-hidden="true">
+    <!-- three resource lines: warning dot -> break dot. Echoes the case's own timeline -->
+    <g stroke="#2A3A5C" stroke-width="1.5">
+      <line x1="760" y1="250" x2="1220" y2="250"/><line x1="760" y1="330" x2="1220" y2="330"/><line x1="760" y1="410" x2="1220" y2="410"/>
+    </g>
+    <g font-family="PlexMono" font-size="10" fill="#8C9AB8" letter-spacing="1">
+      <text x="760" y="238">PEOPLE · PILOTS</text><text x="760" y="318">MATERIAL · MAGNETS</text><text x="760" y="398">COMPONENT · CHIPS</text>
+    </g>
+    <!-- warning -> break spans, on one calendar axis: Jan 2024 = x790, 16 px per month -->
+    <g stroke="#FF8A5C" stroke-width="3" stroke-linecap="round">
+      <line x1="790" y1="250" x2="1160" y2="250" stroke-dasharray="2 6"/>
+      <line x1="1032" y1="330" x2="1075" y2="330" stroke-dasharray="2 6"/>
+      <line x1="1126" y1="410" x2="1141" y2="410" stroke-dasharray="2 6"/>
+    </g>
+    <g fill="#FBFAF6"><circle cx="790" cy="250" r="5"/><circle cx="1032" cy="330" r="5"/><circle cx="1126" cy="410" r="5"/></g>
+    <g fill="#FF8A5C"><circle cx="1160" cy="250" r="7"/><circle cx="1075" cy="330" r="7"/><circle cx="1141" cy="410" r="7"/></g>
+    <g font-family="PlexMono" font-size="10" fill="#C9D2E3">
+      <text x="975" y="272" text-anchor="middle">22 months of warning</text>
+      <text x="1053" y="352" text-anchor="middle">12 weeks</text>
+      <text x="1134" y="432" text-anchor="middle">29 days</text>
+    </g>
+    <g font-family="PlexMono" font-size="9" fill="#5D6C8C">
+      <line x1="790" y1="440" x2="790" y2="446" stroke="#5D6C8C"/><text x="790" y="458" text-anchor="middle">2024</text>
+      <line x1="982" y1="440" x2="982" y2="446" stroke="#5D6C8C"/><text x="982" y="458" text-anchor="middle">2025</text>
+      <line x1="1174" y1="440" x2="1174" y2="446" stroke="#5D6C8C"/><text x="1174" y="458" text-anchor="middle">2026</text>
+    </g>
+    <g font-family="PlexMono" font-size="9.5" fill="#8C9AB8">
+      <circle cx="770" cy="492" r="4" fill="#FBFAF6"/><text x="780" y="495">first public warning</text>
+      <circle cx="922" cy="492" r="5" fill="#FF8A5C"/><text x="933" y="495">operation breaks</text>
+    </g>
+  </svg>
+  <div class="pad">
+    <div class="kick">AXIOM × NEXT · Operations Case Challenge 2026 · Stage 2</div>
+    <h1>When Lean<br>Has <span>No Slack</span></h1>
+    <p class="deck-sub">Pricing the buffer for India's electric two-wheeler makers, and knowing when to start paying for it.</p>
+    <div class="team">
+      <div><div class="lbl">Team</div><div class="tname" style="border-style:solid;border-color:#FF8A5C">Khel Khatam</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 1 · DIAGNOSIS ======================= -->
+<section class="slide" data-title="Diagnosis">
+<div class="pad">
+  <div class="tabs"><span class="on">01 Diagnosis</span><span>02 Buffer model · E2W</span><span>03 Early warning &amp; playbook</span><span>Appendix</span><span class="pg">1 / 5</span></div>
+  <h1 class="t">Every break was announced in public. None of the firms had a buffer that <b>outlasted the time to fix</b>, and in each case that buffer would have cost ~10× less than the break did</h1>
+  <p class="sub">Warning lead time ran from <em>22 months</em> (IndiGo) down to <em>29 days</em> (Nexperia). It decided how much could be done, not whether the operation survived. Survival came down to one inequality: <em>time-to-survive on buffer + warning time actually used ≥ time-to-recover</em>.<sup class="f">18</sup></p>
+
+  <div style="position:absolute;left:34px;top:166px;width:742px">
+    <div class="ph"><span class="n">1</span>The three breaks, read the same way<span class="r">annex refs in [ ], other sources numbered (see A2)</span></div>
+    <table class="g">
+      <tr><th style="width:104px"></th><th><span class="chip" style="background:var(--ink)"></span>IndiGo · pilots</th><th><span class="chip" style="background:var(--ink)"></span>EV makers · rare-earth magnets</th><th><span class="chip" style="background:var(--ink)"></span>Carmakers · Nexperia chips</th></tr>
+      <tr><td class="rh">Constraint that broke</td><td><b>People:</b> captains (PICs) under new FDTL; weekly rest 48 h, night landings cut from 6 to 2 [A2]<sup class="f">2</sup></td><td><b>Material:</b> NdFeB magnets using 7 licensed medium/heavy rare earths [B1]; ~85% of India's imports from China<sup class="f">9</sup></td><td><b>Component:</b> basic discrete chips. Only ~5% of the market by revenue, far more by volume [C2]</td></tr>
+      <tr><td class="rh">Buffer that was missing</td><td>Negative on day 1: <span class="num">2,357</span> captains vs <span class="num">2,422</span> needed (short 65)<sup class="f">2</sup>. FY25 hiring of 418 pilots was the lowest since FY20, while ~200 daily flights were added<sup class="f">2</sup></td><td>~1 month of magnets at Bajaj and TVS [B7]; single country for processing (~90%) [B3]; no qualified non-REE motor in production</td><td>Weeks of stock in Europe [C4]; part numbers qualified to a single source; requalification takes months [C4]</td></tr>
+      <tr><td class="rh">First public warning → break</td><td>Rules notified <b>Jan 2024</b> → collapse <b>2–5 Dec 2025</b> [A1, A6]<br><span class="tag ink">≈22 months</span></td><td>Licensing announced <b>4 Apr 2025</b> → Bajaj output hit <b>late Jun 2025</b><sup class="f">5</sup><br><span class="tag ink">≈12 weeks</span> <span class="muted">earlier signal: Dec 2023 REE tech export ban<sup class="f">20</sup></span></td><td>Dutch takeover <b>30 Sep 2025</b> → Honda Celaya halt <b>29 Oct 2025</b> [C1, C3]<br><span class="tag ink">29 days</span> <span class="muted">earlier signal: Wingtech on US Entity List, Dec 2024<sup class="f">19</sup></span></td></tr>
+      <tr><td class="rh">Time to fix</td><td>Captain notice period is 12 months<sup class="f">2</sup>; DGCA relief to 10 Feb 2026 [A8]</td><td>~4 months to India relief (Aug 2025) [B10]; licences for only 4 Indian firms by Oct 2025, 50+ pending<sup class="f">12</sup></td><td>Months to qualify a new supplier [C4]</td></tr>
+      <tr><td class="rh">Operational cost</td><td><span class="num">1,232</span> cancellations in Nov [A4]; ~<span class="num">4,500</span> in a week, OTP <span class="num">19.7%</span>, 10% winter schedule cut [A5, A6]</td><td>Chetak output <span class="num">24,106</span> (May) → <span class="num">10,824</span> (Jul), −55%<sup class="f">5</sup>; e-Vitara H1 plan cut ~⅔ [B8]</td><td>Honda Celaya plant halted [C3]; GAC-Honda and EU lines stopped in waves</td></tr>
+      <tr><td class="rh">Financial cost</td><td><b class="num">Rs 577 cr</b> exceptional loss + Rs 22 cr DGCA fine; Q3 FY26 PAT −76%<sup class="f">3</sup></td><td>~30k Chetaks ≈ <b class="num">Rs 73 cr</b> contribution (our est., A1); Ather held back Rs 19.2 cr of incentive revenue<sup class="f">8</sup></td><td>Honda op-profit guide cut <b class="num">¥150 bn</b><sup class="f">11</sup>; Nissan ¥25 bn provision [C3]</td></tr>
+      <tr><td class="rh">What the buffer would have cost</td><td>65 captains × Rs 0.6–1.2 cr<sup class="f">4</sup> = <b class="num">Rs 39–78 cr/yr</b></td><td>3 months of magnets = <b class="num">Rs 4.7 cr/yr</b> to hold (Bajaj scale, slide 2)</td><td>Cents-per-part chips. Mahindra's secured quarter + substitutes = "minor impact" [C5]</td></tr>
+    </table>
+  </div>
+
+  <div style="position:absolute;left:800px;top:166px;width:446px">
+    <div class="ph"><span class="n">2</span>Warning vs buffer vs fix, in months<span class="r">hover bars</span></div>
+    <div id="ch-diag"></div>
+    <div style="display:flex;gap:14px;font:500 9px/1 'PlexMono';color:var(--ink-2);margin:2px 0 0 4px">
+      <span><span class="chip" style="background:var(--blue)"></span>warning lead time</span><span><span class="chip" style="background:var(--teal)"></span>buffer (time to survive)</span><span><span class="chip" style="background:var(--orange)"></span>time to recover</span>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:800px;top:416px;width:446px">
+    <div class="ph"><span class="n">3</span>Three different failure modes, one common pattern</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+      <div class="box" style="padding:7px 8px"><div class="tag a">Saw it, didn't act</div><p style="font:400 9.4px/1.33 Plex;margin-top:5px">IndiGo had <b>22 months</b>, longer than the 12-month hiring cycle. The failure was a decision: growth was prioritised over crew. A warning system alone would not have saved it.</p></div>
+      <div class="box" style="padding:7px 8px"><div class="tag r">Too little time</div><p style="font:400 9.4px/1.33 Plex;margin-top:5px">EV makers had <b>12 weeks</b> against a ~4-month fix and 4 weeks of stock. Only buffer held <i>before</i> the warning, or a pre-qualified substitute, could bridge it.</p></div>
+      <div class="box" style="padding:7px 8px"><div class="tag r">No time at all</div><p style="font:400 9.4px/1.33 Plex;margin-top:5px">Carmakers had <b>29 days</b>. Mahindra coped because the quarter was already covered and substitutes existed [C5]. Dual-qualification was the only lever that worked.</p></div>
+    </div>
+    <div style="margin-top:8px;padding:7px 9px;background:var(--orange-50);border-left:3px solid var(--orange);font:500 10px/1.38 Plex;color:var(--ink)">
+      <b>Pattern:</b> a single point of failure + a public signal + a buffer measured in <i>weeks</i> against a fix measured in <i>months</i>. Lean KPIs (inventory days, crew utilisation) rewarded each firm for removing exactly the slack that mattered.
+    </div>
+  </div>
+
+  <div class="foot">[A–C] = case Annex A rows. 2 Business Today 08-12-2025 · 3 Outlook Business 22-01-2026 · 4 Aviation A2Z (captain pay) · 5 Autocar Pro 14-08-2025 (SIAM data) · 8 Inc42 (Ather Q2 FY26) · 9 ICRA via Business Standard 12-06-2025 · 11 Adnkronos/Kyodo 07-11-2025 · 12 ET via Vision IAS 31-10-2025 · 18 Simchi-Levi et al., HBR 2014 · 19 US BIS Entity List 02-12-2024 · 20 MOFCOM 21-12-2023. Lead time = first official notice to first output loss. TTR bars are lower bounds.</div>
+  <div class="sowhat"><span class="k">So what</span>Slack was cheap in all three cases. What went missing was a rule linking buffer size to time-to-recover. Slide 2 prices that rule for one industry.</div>
+</div>
+</section>
+
+<!-- ======================= 2 · BUFFER MODEL ======================= -->
+<section class="slide" data-title="Buffer model">
+<div class="pad">
+  <div class="tabs"><span>01 Diagnosis</span><span class="on">02 Buffer model · E2W</span><span>03 Early warning &amp; playbook</span><span>Appendix</span><span class="pg">2 / 5</span></div>
+  <h1 class="t">Electric two-wheelers: a month of magnets costs <b>Rs 1.6 cr a year</b> to hold, and a month without them costs <b>Rs 24 cr</b>. Hold 4 months and pre-qualify a second motor</h1>
+  <p class="sub">Representative Bajaj-scale maker at <em>22,500 scooters a month</em>. A buffer month pays for itself if a curb longer than that buffer hits more often than <em>once in 16 years</em>. China imposed two magnet-relevant curbs in 2025 (April, October), and the October one is only paused.<sup class="f">13</sup></p>
+
+  <div style="position:absolute;left:34px;top:166px;width:300px">
+    <div class="ph"><span class="n">1</span>The two numbers that decide it</div>
+    <table class="g" style="font-size:9.6px">
+      <tr><td>Volume (CY25 Bajaj 2,69,836 ÷ 12)<sup class="f">7</sup></td><td class="num" style="text-align:right;white-space:nowrap">22,500/mo</td></tr>
+      <tr><td>Magnet value per scooter: motor Rs 8–15k × ~30% magnet share<sup class="f">9</sup></td><td class="num" style="text-align:right;white-space:nowrap">Rs 3,450</td></tr>
+      <tr><td class="muted" style="font-size:9px">check: 3.1% of the Rs 1.11 L ASP<sup class="f">8</sup>, inside the "&lt;5%" in [B9]</td><td></td></tr>
+      <tr><td>Carrying cost (capital 14% + storage 3% + obsolescence 3%)</td><td class="num" style="text-align:right;white-space:nowrap">20% p.a.</td></tr>
+      <tr style="background:var(--teal-50)"><td><b>h</b> = holding one month of cover, per year</td><td class="num" style="text-align:right;white-space:nowrap"><b>Rs 1.55 cr</b></td></tr>
+      <tr><td>Scooters lost per curb month (Bajaj guide [B8]; Chetak fell ~13k May→Jul<sup class="f">5</sup>)</td><td class="num" style="text-align:right;white-space:nowrap">10,000</td></tr>
+      <tr><td>Contribution per scooter: ASP × 22% adj. gross margin<sup class="f">8</sup></td><td class="num" style="text-align:right;white-space:nowrap">Rs 24,400</td></tr>
+      <tr style="background:var(--orange-50)"><td><b>L</b> = one month without magnets</td><td class="num" style="text-align:right;white-space:nowrap"><b>Rs 24.4 cr</b></td></tr>
+    </table>
+    <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+      <div style="font:900 34px/1 Archivo;color:var(--orange)">15.7×</div>
+      <div style="font:400 9.6px/1.35 Plex;color:var(--ink-2)">L ÷ h. The asymmetry is why the curve on the right falls so steeply. Break-even probability for any buffer month = h ÷ L = <b class="num">6.4%/yr</b>.</div>
+    </div>
+    <div class="ph" style="margin-top:10px"><span class="n">2</span>Risk inputs (A1 has the rationale)</div>
+    <div style="font:400 9.5px/1.4 Plex;color:var(--ink-2)">
+      <b>p</b> = 1 curb every 3 years (base); tested 5–50%.<br>
+      <b>Length</b> 2 / 4 / 6 / 9 / 12 months, probability 25 / 35 / 20 / 12 / 8%. Mean 5.1 months; 2025 was ~4–5 for India [B10].
+    </div>
+    <div style="margin-top:8px;padding:6px 9px;border:1px dashed var(--rule-2);border-radius:5px;font:400 9.3px/1.38 Plex;color:var(--ink-2)"><b style="color:var(--ink)">Back-test, 2025:</b> Chetak lost ~29,800 scooters Jun–Aug ≈ <b>Rs 73 cr</b> of contribution. Three months of cover would have cost <b>Rs 4.7 cr</b> a year (A1-c).</div>
+  </div>
+
+  <div style="position:absolute;left:352px;top:166px;width:468px">
+    <div class="ph"><span class="n">3</span>Expected annual cost vs months of cover (Rs cr)<span class="r">p = ⅓, hover points</span></div>
+    <div id="ch-cost" style="position:relative"></div>
+    <div style="display:flex;gap:14px;font:500 9px/1 'PlexMono';color:var(--ink-2);margin:0 0 0 4px">
+      <span><span class="chip" style="background:var(--ink)"></span>total expected cost</span><span><span class="chip" style="background:var(--teal)"></span>holding cost</span><span><span class="chip" style="background:var(--orange)"></span>expected stock-out loss</span>
+    </div>
+    <div style="margin-top:7px;font:400 9.4px/1.38 Plex;color:var(--ink-2)"><b>Rule we used</b> (newsvendor logic): add a month of cover while <span class="mono">p · P(curb &gt; B) · L ≥ h</span>. On stock alone the optimum is 9 months, but the curve is flat from 6 to 9. Months 7–9 save only Rs 0.2 cr/yr and tie up another Rs 23 cr of working capital, so we stop earlier and buy time a cheaper way.</div>
+  </div>
+
+  <div style="position:absolute;left:838px;top:166px;width:408px">
+    <div class="ph"><span class="n">4</span>Break-even cover by curb probability and length<span class="r">stock only</span></div>
+    <div id="ch-heat"></div>
+    <div style="font:400 8.6px/1.3 PlexMono;color:var(--muted);margin-top:2px">Cell = smallest cover within 3% of minimum cost. 0 = stay lean (p below the 6.4% break-even). Orange box = base case.</div>
+    <div class="ph" style="margin-top:8px"><span class="n">5</span>Three ways to hold slack (Rs cr)</div>
+    <table class="g" style="font-size:9.5px">
+      <tr><th></th><th>A · Lean today</th><th>B · Stock only</th><th style="background:var(--ink);color:#fff">C · Recommended</th></tr>
+      <tr><td class="rh" style="width:96px">What it is</td><td>1 month of magnets</td><td>6 months of magnets</td><td>4 months + homologated light-REE/ferrite motor for 60% of volume</td></tr>
+      <tr><td class="rh">Working capital</td><td class="num">7.8</td><td class="num">46.6</td><td class="num">31.0</td></tr>
+      <tr><td class="rh">Expected cost/yr</td><td class="num" style="color:var(--red)"><b>35.3</b></td><td class="num">16.2</td><td class="num"><b>15.5</b> <span class="muted">(incl. 4.0 programme)</span></td></tr>
+      <tr><td class="rh">Loss in a 9-month curb</td><td class="num" style="color:var(--red)">195</td><td class="num">73</td><td class="num"><b>49</b></td></tr>
+      <tr><td class="rh">Loss in a 12-month curb</td><td class="num" style="color:var(--red)">269</td><td class="num">147</td><td class="num"><b>78</b></td></tr>
+    </table>
+    <div style="margin-top:7px;padding:6px 9px;background:var(--orange-50);border-left:3px solid var(--orange);font:400 9.3px/1.38 Plex;color:var(--ink)"><b>Why C beats B:</b> stock only buys a fixed number of months, while a second motor shortens the curb itself for 60% of volume. C has the lowest expected cost <i>and</i> the smallest tail, and needs Rs 16 cr less working capital than B.</div>
+  </div>
+
+  <div class="note" style="position:absolute;left:606px;top:236px;width:104px;transform:rotate(-3deg);text-align:center;line-height:1">flat from 6 to 9.<br>stop at 4, buy the rest with a 2nd motor</div>
+
+  <div class="foot">5 Autocar Pro 14-08-2025 · 7 Autocar India Jan-2026 (Vahan CY25) · 8 Inc42 10-11-2025 (Ather ASP, margin, Rs 19.2 cr PMP deferral) · 9 ICRA via Business Standard 12-06-2025 · 13 The National 09-11-2026. Programme cost for C = Rs 20 cr engineering + homologation over 5 yrs (team assumption). 60% coverage is based on Bajaj running at 50–60% of plan on light-REE magnets in Aug 2025.<sup class="f">5</sup> Full math in A1.</div>
+  <div class="sowhat"><span class="k">So what</span>Moving from 1 month to 4 months plus a second motor costs ~Rs 9 cr a year and removes ~Rs 28 cr a year of expected loss. Homologate the motor before the curb.</div>
+</div>
+</section>
+
+<!-- ======================= 3 · EARLY WARNING ======================= -->
+<section class="slide" data-title="Early warning">
+<div class="pad">
+  <div class="tabs"><span>01 Diagnosis</span><span>02 Buffer model · E2W</span><span class="on">03 Early warning &amp; playbook</span><span>Appendix</span><span class="pg">3 / 5</span></div>
+  <h1 class="t">Early warning: eight indicators, three trigger levels, one owner. On 10 Nov 2026 the dashboard reads <b>AMBER</b>, so cover goes from 4 to 6 months now</h1>
+  <p class="sub">Each trigger is set to fire early enough that <em>buffer + warning time ≥ time-to-recover</em>. China's pause on its Oct-2025 rare-earth rules was extended on 9 Nov 2026, but only to <em>10 Jan 2027</em>: a 61-day horizon, inside our 4-month buffer.<sup class="f">13</sup></p>
+
+  <div style="position:absolute;left:34px;top:166px;width:770px">
+    <div class="ph"><span class="n">1</span>Indicator board<span class="r">owner: Head of Operations · reviewed weekly, daily on Amber</span></div>
+    <table class="g" style="font-size:8.9px">
+      <tr><th style="width:18px">#</th><th style="width:168px">Indicator</th><th style="width:138px">Source · cadence</th><th><span class="tag gr">Green</span></th><th><span class="tag a">Amber</span></th><th><span class="tag r">Red · trigger</span></th><th style="width:82px">Today</th></tr>
+      <tr><td class="num">1</td><td><b>Chinese export-control notices</b> on REE, magnets, the 0.1% rule</td><td>MOFCOM announcements · daily scan</td><td>No new list; pause &gt;180 d away</td><td>Pause ends in &lt;90 d, or a consultation notice</td><td>New list in force, or pause lapses</td><td><span class="tag a">Amber</span><br><span class="muted">61 d left</span></td></tr>
+      <tr><td class="num">2</td><td><b>Licence lead time</b> for our Tier-1s' import applications</td><td>Supplier portal · weekly</td><td>&lt;45 days [B2]</td><td>45–60 d, or &gt;10 files pending</td><td>&gt;60 d or any rejection</td><td><span class="tag gr">Green</span><br><span class="muted">assumed</span></td></tr>
+      <tr><td class="num">3</td><td><b>China magnet exports to India</b>, tonnes vs 6-month average</td><td>China Customs (GACC) monthly; UN Comtrade HS 8505.11</td><td>within ±15%</td><td>−15% to −30%</td><td>&gt;30% drop, 2 months running</td><td><span class="tag gr">Green</span></td></tr>
+      <tr><td class="num">4</td><td><b>India's HS 8505 imports</b> (t, value, China share)</td><td>Export Import Data Bank · monthly</td><td>China share stable</td><td>Rs/kg +20% (premium buying)</td><td>Volume −30% MoM</td><td><span class="tag gr">Green</span></td></tr>
+      <tr><td class="num">5</td><td><b>NdPr oxide and N52 magnet price</b>, China vs ex-China spread</td><td>SMM / Asian Metal · weekly</td><td>&lt;10% move in 4 weeks</td><td>10–25%, or spread &gt;1.5×</td><td>&gt;25%, or spread &gt;2×</td><td><span class="tag gr">Green</span></td></tr>
+      <tr><td class="num">6</td><td><b>Days of magnet cover</b>: owned + Tier-1 + in transit</td><td>ERP + supplier stock reports · weekly</td><td>&gt;120 d</td><td>60–120 d</td><td>&lt;60 d</td><td><span class="tag a">Amber</span><br><span class="muted">≈120 d</span></td></tr>
+      <tr><td class="num">7</td><td><b>Peer distress</b>: rival registrations, production cuts</td><td>Vahan (daily), SIAM (monthly), filings</td><td>Normal</td><td>One top-5 maker −20% MoM</td><td>Two makers −20%, or one says "magnets"</td><td><span class="tag gr">Green</span></td></tr>
+      <tr><td class="num">8</td><td><b>Domestic supply readiness</b>: REPM awards, IREL Nd output (tells us when to taper)</td><td>MHI / PIB, IREL · quarterly</td><td>Awards on time; 500 t Nd FY27</td><td>Award slips &gt;6 months</td><td>Plant slips past 2029</td><td><span class="tag a">Amber</span><br><span class="muted">no award yet</span></td></tr>
+    </table>
+  </div>
+
+  <div style="position:absolute;left:824px;top:166px;width:422px">
+    <div class="ph"><span class="n">2</span>Does the 6,000-t magnet scheme close the gap?</div>
+    <div id="ch-scheme"></div>
+    <div style="display:flex;gap:14px;font:500 9px/1 'PlexMono';color:var(--ink-2);margin:1px 0 4px 34px"><span><span class="chip" style="background:var(--orange)"></span>India demand, t/yr</span><span><span class="chip" style="background:var(--blue)"></span>scheme output, % of demand</span></div>
+    <div style="font:400 9.3px/1.38 Plex;color:var(--ink-2);margin-top:3px">
+      <b style="color:var(--ink)">Not before ~2030, and not fully.</b> <b>Timing:</b> 20 bids opened 13 Aug 2026<sup class="f">15</sup>, award still pending; with 2-year gestation<sup class="f">14</sup> first magnets arrive ~2029. <b>Size:</b> even at 100% use, 6,000 t is 83% of 2030 demand [B5, B11]. <b>Feedstock:</b> 6,000 t needs ~1,800 t Nd/Pr; IREL targets 500 t of Nd in FY27<sup class="f">16</sup>, and the heavy REEs China licenses (Dy, Tb) are not covered. Read the scheme as a taper signal from FY30, not a reason to stay lean.
+    </div>
+    <div class="box" style="margin-top:7px;padding:6px 9px;font:400 9.2px/1.38 Plex;color:var(--ink-2)"><b style="color:var(--ink)">For shocks we haven't seen:</b> any part where one country or supplier holds &gt;50% share <i>and</i> time-to-recover exceeds our cover gets its own row on the board (chips, cells and controllers are next). <b style="color:var(--ink)">Escalation:</b> 2 Ambers = Amber posture · 1 Red = Day 0.</div>
+  </div>
+
+  <div style="position:absolute;left:34px;top:524px;width:1212px">
+    <div class="ph"><span class="n">3</span>90-day playbook<span class="r">KPI: lost scooters &lt;3,000 a month through any curb</span></div>
+    <div style="display:grid;grid-template-columns:1.05fr 1fr 1fr 1fr 1fr;gap:6px">
+      <div class="box" style="padding:6px 8px;border-color:var(--amber);background:var(--amber-bg)"><div class="tag a">Amber posture · now</div><p style="font:400 9.1px/1.35 Plex;margin-top:4px">Raise cover from 4 to 6 months with Tier-1 call-offs. Pre-file licences with end-use certificates [12]. Freeze changes to the magnet spec. Brief the board on the Rs 15 cr working-capital ask.</p></div>
+      <div class="box" style="padding:6px 8px"><div class="tag r">Day 0–7 · contain</div><p style="font:400 9.1px/1.35 Plex;margin-top:4px">War room: COO plus procurement, R&amp;D, finance, sales. Count every magnet owned, at Tier-1s and in transit. Place maximum licensed orders. Tell the testing agency a motor switch is coming.</p></div>
+      <div class="box" style="padding:6px 8px"><div class="tag r">Day 8–30 · allocate</div><p style="font:400 9.1px/1.35 Plex;margin-top:4px">Send scarce magnets to the highest-contribution variants. Move low-power trims to light-REE magnets (no Dy/Tb), as Bajaj did by Aug 2025.<sup class="f">5</sup> Activate ex-China suppliers in Japan, Korea and Vietnam.</p></div>
+      <div class="box" style="padding:6px 8px"><div class="tag r">Day 31–60 · switch</div><p style="font:400 9.1px/1.35 Plex;margin-top:4px">Ramp the pre-homologated ferrite/light-REE motor to 60% of volume. Re-plan dealer allocation. Give booked customers delivery dates so the demand defers to us instead of moving to rivals.</p></div>
+      <div class="box" style="padding:6px 8px"><div class="tag ink">Day 61–90 · rebuild</div><p style="font:400 9.1px/1.35 Plex;margin-top:4px">Refill cover to target before relaxing. Re-set trigger levels from this event's data. Sign offtake MoUs with REPM bidders so domestic supply arrives with a buyer.</p></div>
+    </div>
+  </div>
+
+  <div class="foot">5 Autocar Pro 14-08-2025 · 12 ET via Vision IAS 31-10-2025 · 13 The National 09-11-2026 · 14 PIB / Tribune 26-11-2025 · 15 Energetica India / PIB 14-08-2026 · 16 IBEF (IREL) Nov-2025 · [B2, B5, B11] case annex. "Today" for indicators 2 and 6 is illustrative: they use internal data a real operator would plug in. Demand doubles 2025→2030 per [B11]; utilisation ramp of 35/70/90/100% is our assumption.</div>
+  <div class="sowhat"><span class="k">So what</span>The warning system buys time and the buffer buys survival. Neither works alone, so the triggers are sized to the buffer and the buffer is sized to time-to-recover.</div>
+</div>
+</section>
+
+<!-- ======================= 4 · APPENDIX 1 ======================= -->
+<section class="slide" data-title="A1 · Model">
+<div class="pad">
+  <div class="tabs"><span>01 Diagnosis</span><span>02 Buffer model · E2W</span><span>03 Early warning &amp; playbook</span><span class="on">Appendix · A1 Model details</span><span class="pg">4 / 5</span></div>
+  <h1 class="t" style="font-size:22px">A1 · Model details and calculations</h1>
+
+  <div style="position:absolute;left:34px;top:84px;width:384px">
+    <div class="ph"><span class="n">a</span>Formulas</div>
+    <div class="box mono" style="padding:8px 10px;font-size:9.6px;line-height:1.6">
+      h = Q × m × c = 22,500 × 3,450 × 20% = <b>Rs 1.55 cr / buffer-month / yr</b><br>
+      L = lost units × contribution = 10,000 × 24,420 = <b>Rs 24.4 cr / month</b><br>
+      E[loss | B] = p × Σ P(D=d) × max(0, d − B) × L × f<br>
+      Total(B) = B × h + E[loss | B] (+ programme cost)<br>
+      Add month B+1 while p × P(D &gt; B) × L ≥ h<br>
+      <span class="muted">f = share of volume not covered by the alternative motor (1.0 for A and B, 0.4 for C)</span>
+    </div>
+    <div class="ph" style="margin-top:10px"><span class="n">b</span>Why these risk inputs</div>
+    <div style="font:400 9.4px/1.42 Plex;color:var(--ink-2)">
+      <b>p = ⅓:</b> magnet-relevant Chinese moves in Dec 2023 (tech ban)<sup class="f">20</sup>, Apr 2025 [B1] and Oct 2025<sup class="f">13</sup>, i.e. three in ~24 months. We take one supply-cutting curb every 3 years to stay conservative.<br>
+      <b>Length:</b> India waited ~4 months for relief in 2025 [B10], and most licences were still pending in October.<sup class="f">12</sup> The 9–12 month tail stands for the Oct-2025 rules (incl. the 0.1% content rule) coming back into force.<br>
+      <b>Lost units:</b> 100% treated as lost (rivals TVS and Ather gained share in Aug 2025).<sup class="f">6</sup> If half were only deferred, L halves, break-even p becomes 1 in 8 years, and optimal cover is still 4 months.
+    </div>
+    <div class="ph" style="margin-top:10px"><span class="n">c</span>2025 back-test (Bajaj Chetak)</div>
+    <table class="g" style="font-size:9.3px">
+      <tr><th>Month</th><th>Output</th><th>vs May run-rate</th></tr>
+      <tr><td>May</td><td class="num">24,106</td><td class="num">—</td></tr>
+      <tr><td>Jun</td><td class="num">18,479</td><td class="num">−5,627</td></tr>
+      <tr><td>Jul</td><td class="num">10,824</td><td class="num">−13,282</td></tr>
+      <tr><td>Aug (est. 55% of plan)<sup class="f">5</sup></td><td class="num">~13,260</td><td class="num">−10,850</td></tr>
+      <tr><td><b>Total</b></td><td></td><td class="num"><b>≈ −29,800 ≈ Rs 73 cr</b></td></tr>
+    </table>
+  </div>
+
+  <div style="position:absolute;left:440px;top:84px;width:400px">
+    <div class="ph"><span class="n">d</span>Output by months of cover (p = ⅓, Rs cr / yr)</div>
+    <table class="g" id="tbl-out" style="font-size:9.3px"></table>
+    <div class="ph" style="margin-top:10px"><span class="n">e</span>Aviation cross-check (crew buffer)</div>
+    <div style="font:400 9.4px/1.42 Plex;color:var(--ink-2)">65 missing captains [A7] × Rs 60 L–1.2 cr pay<sup class="f">4</sup> = <b>Rs 39–78 cr / yr</b>, against Rs 577 cr exceptional loss + Rs 22 cr fine in one quarter.<sup class="f">3</sup> That is a 8–15× payback on one event, the same order as the magnet case (15.7×).</div>
+    <div class="ph" style="margin-top:10px"><span class="n">h</span>Sensitivity: break-even cover (months, stock only)</div>
+    <table class="g" id="tbl-sens" style="font-size:9.3px"></table>
+  </div>
+
+  <div style="position:absolute;left:862px;top:84px;width:384px">
+    <div class="ph"><span class="n">f</span>Scheme gap (tonnes / yr)</div>
+    <table class="g" id="tbl-scheme" style="font-size:9.3px"></table>
+    <div style="font:400 9px/1.4 Plex;color:var(--muted);margin-top:4px">Demand: 3,600 t in 2025 [B5], doubling by 2030 [B11] (≈14.9%/yr). Capacity: 6,000 t [B11] at 35/70/90/100% use from 2029 (award ~Q1 2027 + 2-yr gestation).<sup class="f">14, 15</sup></div>
+
+    <div class="ph" style="margin-top:12px"><span class="n">g</span>Live deck (HTML)</div>
+    <div class="box" style="display:flex;gap:12px;padding:10px;align-items:center;border-style:dashed;border-color:var(--ink-2)">
+      <div id="qr" style="width:96px;height:96px;flex:none;border:1px solid var(--rule-2);display:flex;align-items:center;justify-content:center;font:500 8.5px/1.2 PlexMono;color:var(--muted);text-align:center;background:#fff"><!--QR-->QR code<!--/QR--></div>
+      <div style="font:400 9.6px/1.45 Plex;color:var(--ink-2)">This deck is also live as a web page. Open it and press <b>Try the model</b> on the bar: the sliders change p, curb length, margin, magnet value and carrying rate, and the break-even cover recomputes in the browser.<br><span id="liveurl" class="mono" style="color:var(--blue);font-weight:600;word-break:break-all">[ deck link goes here ]</span></div>
+    </div>
+  </div>
+
+  <div class="foot" style="bottom:14px">3 Outlook Business 22-01-2026 · 4 Aviation A2Z · 5 Autocar Pro 14-08-2025 · 6 Inc42 Sep-2025 · 12 ET via Vision IAS · 13 The National 09-11-2026 · 14 PIB 26-11-2025 · 15 PIB 14-08-2026 · 20 MOFCOM 21-12-2023. The live deck recomputes every figure in the browser.</div>
+</div>
+</section>
+
+<!-- ======================= 5 · APPENDIX 2 ======================= -->
+<section class="slide" data-title="A2 · Sources">
+<div class="pad">
+  <div class="tabs"><span>01 Diagnosis</span><span>02 Buffer model · E2W</span><span>03 Early warning &amp; playbook</span><span class="on">Appendix · A2 Sources &amp; assumptions</span><span class="pg">5 / 5</span></div>
+  <h1 class="t" style="font-size:22px">A2 · Sources, assumptions and where sources disagree</h1>
+
+  <div style="position:absolute;left:34px;top:84px;width:520px">
+    <div class="ph"><span class="n">a</span>Where public sources disagree, and what we used</div>
+    <table class="g" style="font-size:9.3px">
+      <tr><th style="width:110px">Data point</th><th>What the sources say</th><th style="width:150px">What we used, and why</th></tr>
+      <tr><td class="rh">India's magnet imports [B4]</td><td>Inc42: 870 t / Rs 306 cr (FY25). Entrepreneur: ~540 t, &gt;80% China. ICRA: ~US$200 mn, ~85% China.<sup class="f">9</sup> Inc42's implied Rs 3,500/kg is below the ~Rs 6,000/kg NdFeB price<sup class="f">10</sup>, so that bucket probably includes ferrite and other magnet types.</td><td>Tonnage is <b>not</b> used in the P&amp;L model. We price the buffer in rupees per scooter from motor cost.<sup class="f">9</sup> China share 80–85%: the sources agree on this.</td></tr>
+      <tr><td class="rh">India's reserves [B13]</td><td>Cartoq: 5th. YourStory: 3rd. USGS MCS 2025 cut Vietnam from 22 Mt to 3.5 Mt, which moved India (6.9 Mt) to 3rd after China and Brazil.<sup class="f">17</sup> Cartoq's rank matches the older USGS edition.</td><td><b>6.9 Mt, 3rd</b> (USGS MCS 2025). Reserves don't change the 2030 answer, because separation and metal-making are the bottleneck.</td></tr>
+      <tr><td class="rh">Magnet content per scooter</td><td>No public teardown found. Rs 3,450 at ~Rs 6,000/kg implies ~0.57 kg. Car benchmark: ~7.5 g/kW.</td><td>Rupees, not kg. Tested Rs 2,400–4,500 (ICRA range). Break-even cover stays at 6–9 months across that range (A1-h).</td></tr>
+      <tr><td class="rh">IndiGo lead time</td><td>Rules notified Jan 2024 [A1]; drafts discussed from late 2023.<sup class="f">2</sup></td><td>Jan 2024 → Dec 2025 = 22 months (conservative).</td></tr>
+    </table>
+
+    <div class="ph" style="margin-top:10px"><span class="n">b</span>Team assumptions (not from a source)</div>
+    <div style="font:400 9.3px/1.45 Plex;color:var(--ink-2)">20% carrying rate · p = ⅓ and the length distribution (A1-b) · 22% gross margin used as contribution · Rs 20 cr / 5 yrs for the alternative-motor programme · 60% volume coverage on the alternative motor · scheme utilisation ramp 35/70/90/100% · award date ~Q1 2027 · "Today" values for internal indicators 2 and 6 on slide 3.</div>
+
+    <div style="margin-top:10px;padding:7px 10px;border:1px solid var(--rule-2);border-radius:5px;background:#fff;font:500 9.4px/1.4 Plex;color:var(--ink)"><b>AI disclosure:</b> we used an AI assistant to help find sources, write the model code and lay out the slides; the team checked every number against the cited source.</div>
+  </div>
+
+  <div style="position:absolute;left:576px;top:84px;width:670px">
+    <div class="ph"><span class="n">c</span>Numbered sources (as footnoted on slides)</div>
+    <ol id="srcs" style="font:400 8.7px/1.42 Plex;color:var(--ink-2);padding-left:18px;columns:2;column-gap:20px">
+      <li>Case document, "When Lean Has No Slack", Annex A (rows A1–C5) and Annex B</li>
+      <li>Business Today, 08-12-2025: "IndiGo expanded by 200 flights a day but hired only 418 pilots" (PIC need 2,422 vs 2,357)</li>
+      <li>Outlook Business, 22-01-2026: IndiGo Q3 FY26, Rs 577 cr exceptional loss, ~Rs 22 cr DGCA fine</li>
+      <li>Aviation A2Z, 08-11-2025: IndiGo pilot salary 2025 (captain Rs 60 L–1.2 cr)</li>
+      <li>Autocar Professional, 14-08-2025: Bajaj Chetak production −47% in July (SIAM data, Bajaj ED quotes)</li>
+      <li>Inc42, 09-2025: August E2W registrations, Bajaj −40% MoM (Vahan)</li>
+      <li>Autocar India, 01-2026: over 12.8 lakh E2Ws sold in 2025 (Vahan, by maker)</li>
+      <li>Inc42, 10-11-2025: Ather Q2 FY26 (22% adj. GM, ASP, Rs 19.2 cr deferral)</li>
+      <li>Business Standard, 12-06-2025: ICRA on traction-motor magnet inventory, motor cost, import value</li>
+      <li>JMK Research, 2025: "Ferrite vs Rare-Earth" (NdFeB ~Rs 6,000/kg; ferrite ~Rs 400/kg)</li>
+      <li>Adnkronos / Kyodo, 07-11-2025: Honda cuts operating-profit forecast ¥700 bn → ¥550 bn</li>
+      <li>Vision IAS (ET), 31-10-2025: China clears magnet imports for 4 Indian firms; 50+ pending</li>
+      <li>The National, 09-11-2026: China extends pause on rare-earth export curbs to 10 Jan 2027</li>
+      <li>PIB / The Tribune, 26-11-2025: Cabinet approves Rs 7,280 cr REPM scheme (6,000 tpa, 7 yrs incl. 2-yr gestation)</li>
+      <li>Energetica India / PIB, 14-08-2026: MHI receives 20 bids under REPM scheme</li>
+      <li>IBEF, 11-2025: IREL to raise neodymium output to 500 t by FY27</li>
+      <li>Mining.com / Gulf News: USGS MCS 2025 revises Vietnam reserves; country ranking</li>
+      <li>Simchi-Levi, Schmidt &amp; Wei, HBR (Jan–Feb 2014): "From Superstorms to Factory Fires" (TTS/TTR)</li>
+      <li>US BIS, 02-12-2024: Entity List additions incl. Wingtech Technology (Nexperia's parent)</li>
+      <li>China MOFCOM, 21-12-2023: Catalogue of Technologies Prohibited from Export (REE extraction and separation)</li>
+    </ol>
+  </div>
+  <div class="foot" style="bottom:14px">Annex A source links (Outlook Business, Vision IAS, The Tribune, Business Today, HDFC Sky, Gulf News, Mobility Outlook, Entrepreneur India, Inc42, Cartoq, YourStory, EVFY, PM India, Energetica India, Ascendants, AP via Yahoo Finance, electrive, MarkLines) are cited as in the case document. Data accessed 9–10 Nov 2026.</div>
+</div>
+</section>
+
+</div></div>
+
+<div id="prog"></div>
+<div id="bar">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span id="count">1 / 6</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <div id="dots" class="hide-s"></div>
+  <div class="sp"></div>
+  <button id="openModel" class="webonly">Try the model</button>
+  <a id="pdf" href="KhelKhatam_Stage2.pdf" download class="hide-s">PDF</a>
+  <button id="fs" class="hide-s" aria-label="Fullscreen">⤢</button>
+</div>
+
+<div id="modal" role="dialog" aria-modal="true" aria-label="Interactive buffer model">
+  <div class="card">
+    <button class="x" id="closeModel">close ✕</button>
+    <h2>Magnet buffer model: change the inputs</h2>
+    <p style="font:400 13px/1.4 Plex;color:var(--ink-2);margin-top:4px">Same formulas as slide 2 and A1. The duration mix keeps its shape and scales to the typical curb length you choose.</p>
+    <div class="cols">
+      <div id="ctls"></div>
+      <div>
+        <div class="kpis">
+          <div class="kpi"><div class="l">Break-even cover</div><div class="v" id="k-b">–</div></div>
+          <div class="kpi"><div class="l">L ÷ h</div><div class="v" id="k-r">–</div></div>
+          <div class="kpi"><div class="l">Cost of staying lean</div><div class="v" id="k-l">–</div></div>
+        </div>
+        <div id="ch-live"></div>
+        <p id="live-note" style="font:400 12px/1.45 Plex;color:var(--ink-2);margin-top:8px"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="tip"></div>
+
+<script src="qr.js"></script>
+<script>
+/* ============ CONFIG: paste your Vercel URL here after deploying ============ */
+const DEFAULT_URL = "https://khel-khatam-lean.vercel.app";   // the address printed in the PDF: name the Vercel project khel-khatam-lean
+const LIVE_URL = (location.protocol==="https:" && !/localhost/.test(location.hostname)) ? location.origin : DEFAULT_URL;
+
+/* ============ model (mirrors model.py) ============ */
+const BASE = {Q:22500, mag:3450, carry:0.20, lost:10000, cm:24420, p:1/3, scale:1, alt:0.4, altCost:4.0};
+const DUR = [[2,.25],[4,.35],[6,.20],[9,.12],[12,.08]];
+function model(o){
+  const h=o.Q*o.mag*o.carry/1e7, L=o.lost*o.cm/1e7;
+  const short=B=>DUR.reduce((s,[d,pr])=>s+pr*Math.max(0,d*o.scale-B),0);
+  const rows=[]; for(let B=0;B<=24;B++){const hold=B*h, loss=o.p*L*short(B); rows.push({B,hold,loss,total:hold+loss});}
+  const min=Math.min(...rows.map(r=>r.total));
+  const bstar=rows.find(r=>r.total<=min*1.03+0.05).B;
+  return {h,L,rows,bstar,short};
+}
+const fmt=(v,d=1)=>v.toLocaleString('en-IN',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* ============ tiny SVG helpers ============ */
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function txt(p,x,y,s,a={}){const t=el('text',Object.assign({x,y,'font-size':9,fill:'#3B4660'},a),p);t.textContent=s;return t;}
+const tip=document.getElementById('tip');
+function hover(node,html){node.style.cursor='default';
+  node.addEventListener('mousemove',e=>{tip.innerHTML=html;tip.style.display='block';tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY+12)+'px';});
+  node.addEventListener('mouseleave',()=>tip.style.display='none');}
+
+/* ---- chart 1: diagnosis bars ---- */
+(function(){
+  const W=446,H=196, m={l:84,r:30,t:2,b:20}; const svg=el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`});
+  document.getElementById('ch-diag').appendChild(svg);
+  const max=24, x=v=>m.l+(W-m.l-m.r)*v/max;
+  for(let v=0;v<=24;v+=6){el('line',{x1:x(v),x2:x(v),y1:m.t,y2:H-m.b,stroke:'#E6E2D8'},svg);txt(svg,x(v),H-8,v,{'text-anchor':'middle',fill:'#6E7385'});}
+  txt(svg,W-m.r+4,H-8,'mo',{fill:'#6E7385'});
+  const ev=[
+    ['IndiGo','pilots',[22,0,3.3],['Jan 2024 rules → Dec 2025 collapse','0: 65 captains short on day 1','≥3.3 mo: DGCA relief to 10 Feb 2026; 12-mo notice for captains']],
+    ['EV makers','magnets',[2.7,1,4.5],['4 Apr → late Jun 2025','~1 month of magnets [B7]','~4.5 mo to India relief, Aug 2025']],
+    ['Carmakers','Nexperia',[1,0.75,4],['30 Sep → 29 Oct 2025','"weeks" of stock [C4]','"months" to qualify a new supplier; 4 used (range 3–6)']]];
+  const cols=['#3A63A8','#0E9384','#D9480F'], names=['Warning lead time','Buffer (time to survive)','Time to recover'];
+  const band=(H-m.t-m.b)/3;
+  ev.forEach((e,i)=>{
+    const y0=m.t+i*band+5;
+    txt(svg,0,y0+12,e[0],{fill:'#13213C','font-size':10,'font-weight':600,'font-family':'Plex'});
+    txt(svg,0,y0+24,e[1],{fill:'#6E7385','font-size':9});
+    e[2].forEach((v,j)=>{
+      const y=y0+j*17, w=Math.max(x(v)-m.l,0);
+      const r=el('rect',{x:m.l,y,width:Math.max(w,1.5),height:12,rx:2,fill:cols[j]},svg);
+      const lab = v===0?'0':(v<1?'<1':fmt(v,v%1?1:0));
+      txt(svg,m.l+Math.max(w,1.5)+4,y+9.5,lab,{fill:'#13213C','font-weight':600});
+      const hit=el('rect',{x:m.l,y:y-2,width:W-m.l-m.r,height:16,fill:'transparent'},svg);
+      hover(hit,`<b>${e[0]} · ${names[j]}</b><br>${lab} months<br>${e[3][j]}`);
+    });
+    if(i<2) el('line',{x1:0,x2:W-m.r,y1:m.t+(i+1)*band+2,y2:m.t+(i+1)*band+2,stroke:'#DEDAD0','stroke-dasharray':'2 3'},svg);
+  });
+  // annotation: IndiGo had time
+  const a=el('text',{x:x(7),y:m.t+8+41,fill:'#D9480F',style:'font:600 16px Caveat'},svg);a.textContent='← had the time, didn\'t use it';
+  const b=el('text',{x:x(6.2),y:m.t+band+8+38,fill:'#D9480F',style:'font:600 16px Caveat'},svg);b.textContent='← fix outlasted the stock';
+})();
+
+/* ---- chart 2: cost curves ---- */
+function costChart(target,o,W,H,opts={}){
+  const M=model(o), rows=M.rows.slice(0,13);
+  const m={l:34,r:12,t:12,b:24}; const t=document.getElementById(target); t.innerHTML='';
+  const svg=el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`}); t.appendChild(svg);
+  const ymax=Math.max(10,Math.ceil(Math.max(...rows.map(r=>Math.max(r.total,r.hold)))/10)*10);
+  const x=B=>m.l+(W-m.l-m.r)*B/12, y=v=>H-m.b-(H-m.t-m.b)*v/ymax;
+  for(let v=0;v<=ymax;v+=10){el('line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),stroke:'#E6E2D8'},svg);txt(svg,m.l-6,y(v)+3,v,{'text-anchor':'end',fill:'#6E7385'});}
+  for(let B=0;B<=12;B++) txt(svg,x(B),H-10,B,{'text-anchor':'middle',fill:'#6E7385'});
+  txt(svg,W-m.r,H-1,'months of cover →',{'text-anchor':'end',fill:'#6E7385','font-size':8.5});
+  // shaded flat zone 6–9
+  if(opts.zone){el('rect',{x:x(6),y:m.t,width:x(9)-x(6),height:H-m.t-m.b,fill:'#13213C',opacity:.05},svg);}
+  const line=(k,c,w,d)=>el('path',{d:rows.map((r,i)=>(i?'L':'M')+x(r.B)+' '+y(r[k])).join(' '),fill:'none',stroke:c,'stroke-width':w,'stroke-linejoin':'round','stroke-dasharray':d||''},svg);
+  line('hold','#0E9384',2); line('loss','#D9480F',2); line('total','#13213C',2.6);
+  rows.forEach(r=>{const c=el('circle',{cx:x(r.B),cy:y(r.total),r:2.6,fill:'#13213C',stroke:'#FBFAF6','stroke-width':1.5},svg);
+    const hit=el('rect',{x:x(r.B)-12,y:m.t,width:24,height:H-m.t-m.b,fill:'transparent'},svg);
+    hover(hit,`<b>${r.B} month${r.B==1?'':'s'} of cover</b><br>holding Rs ${fmt(r.hold)} cr<br>expected loss Rs ${fmt(r.loss)} cr<br>total Rs ${fmt(r.total)} cr/yr`);});
+  if(opts.marks){
+    const r1=rows[1], r4=rows[4];
+    el('circle',{cx:x(1),cy:y(r1.total),r:5,fill:'none',stroke:'#B42318','stroke-width':1.6},svg);
+    txt(svg,x(1)+8,y(r1.total)-4,`today: Rs ${fmt(r1.total)} cr`,{fill:'#B42318','font-weight':600});
+    const rC=r4.hold+M.L*o.p*o.alt*M.short(4)+o.altCost;
+    el('circle',{cx:x(4),cy:y(rC),r:5,fill:'#13213C'},svg);
+    el('line',{x1:x(4),x2:x(4),y1:y(rC),y2:y(r4.total+5),stroke:'#13213C','stroke-dasharray':'2 2'},svg);
+    txt(svg,x(4)+5,y(r4.total+5)+3,`C: Rs ${fmt(rC)} cr`,{fill:'#13213C','font-weight':600});
+    txt(svg,x(7.5),H-m.b-6,'stock-only optimum',{'text-anchor':'middle',fill:'#6E7385','font-size':8.5});
+  }
+  return M;
+}
+costChart('ch-cost',BASE,468,236,{zone:true,marks:true});
+
+/* ---- chart 3: heatmap ---- */
+(function(){
+  const ps=[.05,.10,.20,1/3,.50], meds=[2,4,6,8];
+  const W=408,H=140,m={l:96,t:16,r:4,b:4}; const svg=el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`});
+  document.getElementById('ch-heat').appendChild(svg);
+  const cw=(W-m.l-m.r)/meds.length, ch=(H-m.t-m.b)/ps.length;
+  const ramp=['#F3F1EA','#DCE6F4','#B6CAE8','#87A6D6','#5A80BF','#3A63A8','#284B87','#1B3566'];
+  txt(svg,m.l-6,10,'curb p / yr  ↓    typical length →',{'text-anchor':'end',fill:'#6E7385','font-size':8.5});
+  meds.forEach((d,j)=>txt(svg,m.l+cw*j+cw/2,10,d+' mo',{'text-anchor':'middle',fill:'#3B4660','font-weight':600}));
+  ps.forEach((p,i)=>{
+    txt(svg,m.l-8,m.t+ch*i+ch/2+3,(p===1/3?'1 in 3 (base)':Math.round(p*100)+'%'),{'text-anchor':'end',fill:p===1/3?'#13213C':'#3B4660','font-weight':p===1/3?700:400});
+    meds.forEach((d,j)=>{
+      const B=model(Object.assign({},BASE,{p,scale:d/4})).bstar;
+      const k=Math.min(ramp.length-1,Math.round(B/2));
+      const r=el('rect',{x:m.l+cw*j+1,y:m.t+ch*i+1,width:cw-2,height:ch-2,rx:2,fill:ramp[k]},svg);
+      const base=(p===1/3&&d===4);
+      if(base) el('rect',{x:m.l+cw*j+1,y:m.t+ch*i+1,width:cw-2,height:ch-2,rx:2,fill:'none',stroke:'#D9480F','stroke-width':2},svg);
+      txt(svg,m.l+cw*j+cw/2,m.t+ch*i+ch/2+3.5,B===0?'0':B+' mo',{'text-anchor':'middle','font-size':10,'font-weight':600,fill:k>=4?'#FFFFFF':'#13213C'});
+      hover(r,`p = ${Math.round(p*100)}%/yr, typical curb ${d} months<br><b>cover that minimises cost: ${B} months</b><br>(smallest B within 3% of the minimum)`);
+    });
+  });
+})();
+
+/* ---- chart 4: scheme gap ---- */
+(function(){
+  const yrs=[2025,2026,2027,2028,2029,2030,2031,2032];
+  const g=Math.pow(2,1/5)-1, dem=yrs.map(y=>3600*Math.pow(1+g,y-2025));
+  const util={2029:.35,2030:.70,2031:.90,2032:1}; const sup=yrs.map(y=>(util[y]||0)*6000);
+  const W=422,H=150,m={l:34,r:8,t:22,b:18}; const svg=el('svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`});
+  document.getElementById('ch-scheme').appendChild(svg);
+  const ymax=10000, bw=(W-m.l-m.r)/yrs.length, x=i=>m.l+bw*i, y=v=>H-m.b-(H-m.t-m.b)*v/ymax;
+  for(let v=0;v<=ymax;v+=2500){el('line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),stroke:'#E6E2D8'},svg);txt(svg,m.l-5,y(v)+3,v?(v/1000)+'k t':'0',{'text-anchor':'end',fill:'#6E7385','font-size':8.5});}
+  yrs.forEach((yr,i)=>{
+    txt(svg,x(i)+bw/2,H-5,"'"+String(yr).slice(2),{'text-anchor':'middle',fill:'#6E7385'});
+    if(sup[i]>0){const r=el('rect',{x:x(i)+bw*.2,y:y(sup[i]),width:bw*.6,height:y(0)-y(sup[i]),rx:2,fill:'#3A63A8'},svg);
+      txt(svg,x(i)+bw/2,y(sup[i])-3,Math.round(sup[i]/dem[i]*100)+'%',{'text-anchor':'middle','font-weight':600,fill:'#13213C'});
+      hover(r,`${yr}: domestic capacity ${Math.round(sup[i]).toLocaleString('en-IN')} t vs demand ${Math.round(dem[i]).toLocaleString('en-IN')} t`);}
+  });
+  el('path',{d:dem.map((v,i)=>(i?'L':'M')+(x(i)+bw/2)+' '+y(v)).join(' '),fill:'none',stroke:'#D9480F','stroke-width':2},svg);
+  dem.forEach((v,i)=>{const c=el('circle',{cx:x(i)+bw/2,cy:y(v),r:3,fill:'#D9480F',stroke:'#FBFAF6','stroke-width':1.5},svg);hover(c,`${yrs[i]} demand ≈ ${Math.round(v).toLocaleString('en-IN')} t`);});
+  
+  
+  txt(svg,x(0)+6,y(700),'no scheme output until ~2029 →',{fill:'#6E7385','font-size':8.5});
+})();
+
+/* ---- appendix tables ---- */
+(function(){
+  const M=model(BASE); const t=document.getElementById('tbl-out');
+  let h='<tr><th>Cover</th><th>Holding</th><th>Exp. loss</th><th>Total</th><th>Value of next month</th></tr>';
+  M.rows.slice(0,13).forEach(r=>{
+    const next=BASE.p*M.L*DUR.reduce((s,[d,pr])=>s+(d>r.B?pr:0),0);
+    const hl=(r.B===1)?' style="background:var(--red-bg)"':(r.B===4?' style="background:var(--teal-50)"':(r.B===9?' style="background:var(--paper-2)"':''));
+    h+=`<tr${hl}><td class="num">${r.B} mo${r.B===1?' · today':r.B===4?' · rec.':r.B===9?' · min':''}</td><td class="num">${fmt(r.hold)}</td><td class="num">${fmt(r.loss)}</td><td class="num"><b>${fmt(r.total)}</b></td><td class="num" style="color:${next>=M.h?'#067647':'#B42318'}">${fmt(next,2)} ${next>=M.h?'≥':'<'} h</td></tr>`;});
+  t.innerHTML=h;
+  const yrs=[2025,2027,2029,2030,2031,2032], g=Math.pow(2,1/5)-1, util={2029:.35,2030:.70,2031:.90,2032:1};
+  let s='<tr><th>Year</th><th>Demand</th><th>Domestic</th><th>Covered</th><th>Import gap</th></tr>';
+  yrs.forEach(y=>{const d=3600*Math.pow(1+g,y-2025), c=(util[y]||0)*6000;
+    s+=`<tr><td class="num">${y}</td><td class="num">${Math.round(d).toLocaleString('en-IN')}</td><td class="num">${Math.round(c).toLocaleString('en-IN')}</td><td class="num">${Math.round(c/d*100)}%</td><td class="num">${Math.round(d-c).toLocaleString('en-IN')}</td></tr>`;});
+  document.getElementById('tbl-scheme').innerHTML=s;
+  const bs=o=>model(Object.assign({},BASE,o)).bstar;
+  let z='<tr><th>Magnet value ↓ / contribution →</th><th>Rs 15,000</th><th>Rs 24,420</th><th>Rs 30,000</th></tr>';
+  [2400,3450,4500].forEach(mg=>{z+=`<tr><td class="num">Rs ${mg.toLocaleString('en-IN')}</td>`+[15000,24420,30000].map(c=>`<td class="num"${mg===3450&&c===24420?' style="background:var(--teal-50);font-weight:700"':''}>${bs({mag:mg,cm:c})}</td>`).join('')+'</tr>';});
+  z+='<tr><th>Other inputs</th><th>low</th><th>base</th><th>high</th></tr>';
+  z+=`<tr><td class="num">Carrying 12 / 20 / 30%</td>`+[.12,.2,.3].map(c=>`<td class="num">${bs({carry:c})}</td>`).join('')+'</tr>';
+  z+=`<tr><td class="num">Lost/mo 5k / 10k / 15k</td>`+[5000,10000,15000].map(c=>`<td class="num">${bs({lost:c})}</td>`).join('')+'</tr>';
+  document.getElementById('tbl-sens').innerHTML=z;
+})();
+
+/* ---- live link + QR (fills the reserved slot on A1) ---- */
+(function(){
+  document.getElementById('liveurl').textContent=LIVE_URL.replace(/^https?:\/\//,'');
+  try{const q=qrcode(0,'M');q.addData(LIVE_URL);q.make();const el=document.getElementById('qr');
+    el.innerHTML=q.createSvgTag({cellSize:3,margin:0,scalable:true});const g=el.querySelector('svg');g.setAttribute('width',88);g.setAttribute('height',88);
+    g.querySelectorAll('path').forEach(p=>p.setAttribute('fill','#13213C'));el.style.border='none';}catch(e){console.error(e)}
+})();
+
+/* ============ viewer ============ */
+const slides=[...document.querySelectorAll('.slide')], deck=document.getElementById('deck');
+let cur=0;
+function fit(){const vw=innerWidth, vh=innerHeight-44; const s=Math.min((vw-24)/1280,(vh-24)/720); deck.style.transform=`translate(-50%,-50%) scale(${s})`;}
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,k)=>s.classList.toggle('on',k===cur));
+  document.getElementById('count').textContent=`${cur+1} / ${slides.length}`;
+  document.getElementById('prog').style.width=((cur+1)/slides.length*100)+'%';
+  [...document.querySelectorAll('#dots i')].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  history.replaceState(null,'','#'+(cur+1));}
+const dots=document.getElementById('dots'); slides.forEach((s,k)=>{const d=document.createElement('i');d.title=s.dataset.title;d.onclick=()=>go(k);dots.appendChild(d);});
+document.getElementById('prev').onclick=()=>go(cur-1); document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('fs').onclick=()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();};
+addEventListener('keydown',e=>{if(document.getElementById('modal').classList.contains('on')){if(e.key==='Escape')closeM();return;}
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(cur+1);} if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(cur-1);}
+  if(e.key==='Home')go(0); if(e.key==='End')go(slides.length-1);});
+let tx=null; addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(tx===null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>50)go(cur+(dx<0?1:-1));tx=null;});
+addEventListener('resize',fit); fit(); go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
+
+/* ============ interactive model ============ */
+const C=[
+  ['p','Chance of a curb in a year',0.02,0.6,0.01,v=>Math.round(v*100)+'%'],
+  ['scale','Typical curb length (base 4 mo)',0.5,2.5,0.05,v=>fmt(4*v,1)+' mo'],
+  ['cm','Contribution per scooter (Rs)',10000,35000,500,v=>'Rs '+v.toLocaleString('en-IN')],
+  ['lost','Scooters lost per curb month',2000,22500,500,v=>v.toLocaleString('en-IN')],
+  ['mag','Magnet value per scooter (Rs)',1500,6000,50,v=>'Rs '+v.toLocaleString('en-IN')],
+  ['carry','Carrying cost per year',0.08,0.35,0.01,v=>Math.round(v*100)+'%'],
+  ['Q','Monthly volume',5000,40000,500,v=>v.toLocaleString('en-IN')]];
+const S=Object.assign({},BASE);
+const ctls=document.getElementById('ctls');
+C.forEach(([k,lab,min,max,st,f])=>{const d=document.createElement('div');d.className='ctl';
+  d.innerHTML=`<label>${lab}<b id="v-${k}">${f(S[k])}</b></label><input type="range" min="${min}" max="${max}" step="${st}" value="${S[k]}" id="i-${k}">`;
+  ctls.appendChild(d); d.querySelector('input').addEventListener('input',e=>{S[k]=+e.target.value;document.getElementById('v-'+k).textContent=f(S[k]);live();});});
+const rb=document.createElement('button');rb.className='x';rb.style.float='none';rb.textContent='reset to deck values';
+rb.onclick=()=>{Object.assign(S,BASE);C.forEach(([k,,,,,f])=>{document.getElementById('i-'+k).value=S[k];document.getElementById('v-'+k).textContent=f(S[k]);});live();};ctls.appendChild(rb);
+function live(){const W=Math.min(620,document.querySelector('#modal .card').clientWidth-60);const M=costChart('ch-live',S,W>360?W:340,250,{});
+  document.getElementById('k-b').textContent=M.bstar+' mo';
+  document.getElementById('k-r').textContent=fmt(M.L/M.h,1)+'×';
+  document.getElementById('k-l').textContent='Rs '+fmt(M.rows[1].total-M.rows[M.bstar].total)+' cr';
+  document.getElementById('live-note').innerHTML=`Holding one month of cover costs <b>Rs ${fmt(M.h,2)} cr/yr</b>; one month without magnets costs <b>Rs ${fmt(M.L)} cr</b>. A buffer month pays when curbs come more often than <b>1 in ${fmt(M.L/M.h,0)} years</b>. "Cost of staying lean" = expected cost at 1 month of cover minus cost at the break-even cover.`;}
+function openM(){document.getElementById('modal').classList.add('on');live();} function closeM(){document.getElementById('modal').classList.remove('on');}
+document.getElementById('openModel').onclick=openM; document.getElementById('closeModel').onclick=closeM;
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeM();});
+</script>
+</body>
+</html>
